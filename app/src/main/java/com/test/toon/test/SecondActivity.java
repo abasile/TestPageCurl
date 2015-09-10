@@ -40,6 +40,11 @@ public class SecondActivity extends AppCompatActivity {
                 super.onPageTurned();
                 layout.removeView(this);
             }
+
+            @Override
+            public void onFirstDrawFinished() {
+                page.turnPage();
+            }
         };
         page.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -55,7 +60,7 @@ public class SecondActivity extends AppCompatActivity {
         page.addBitmap(bmp, v);
         page.bringToFront();
 
-        page.turnPage();
+
     }
 
     public int getStatusBarHeight() {

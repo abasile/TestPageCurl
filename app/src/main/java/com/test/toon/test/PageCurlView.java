@@ -531,38 +531,38 @@ public class PageCurlView extends View {
 		return result;
 	}
 
+    public void onFirstDrawFinished(){}
+
     public void turnPage(){
 
         bFlipRight = true;
+        mFinger.x = 685;
+        mFinger.y = 1100;
 
-		mOldMovement.x = 698;
-		mOldMovement.y = 1185;
+        mOldMovement.x = mFinger.x;
+        mOldMovement.y = mFinger.y;
+        mMovement.x = mInitialEdgeOffset;
+        mMovement.y = mInitialEdgeOffset;
 
-		mA.x = 556;
-		mA.y = 1280;
-        mB.x = 720;
-        mB.y = 1280;
-        mC.x = 720;
-        mC.y = 0;
-        mD.x = 720;
-        mD.y = 1235;
-        mE.x = 720;
-        mE.y = 1235;
-        mF.x = 698;
-        mF.y = 1197;
-
-
-
-        mFinger.x = 698;
-        mFinger.y = 1185;
-
-
+        mFinger.x = 650;
+        mFinger.y = 990;
 
         // Get movement
-        mMovement.x = 55;
-        mMovement.y = 79;
+        mMovement.x -= mFinger.x - mOldMovement.x;
+        mMovement.y -= mFinger.y - mOldMovement.y;
+        mMovement = CapMovement(mMovement, true);
 
+        // Make sure the y value get's locked at a nice level
+        if ( mMovement.y  <= 1 )
+            mMovement.y = 1;
 
+        // Save old movement values
+        mOldMovement.x  = mFinger.x;
+        mOldMovement.y  = mFinger.y;
+
+        // Force a new draw call
+        DoPageCurl();
+        this.invalidate();
 
         bUserMoves=false;
         bFlipping=true;
@@ -920,6 +920,7 @@ public class PageCurlView extends View {
 		// Always refresh offsets
 		mCurrentLeft = getLeft();
 		mCurrentTop = getTop();
+        boolean firstDraw =  false;
 		
 		// Translate the whole canvas
 		//canvas.translate(mCurrentLeft, mCurrentTop);
@@ -928,6 +929,7 @@ public class PageCurlView extends View {
 		if ( !bViewDrawn ) {
 			bViewDrawn = true;
 			onFirstDrawEvent(canvas);
+            firstDraw = true;
 		}
 		
 		canvas.drawColor(Color.WHITE);
@@ -967,6 +969,19 @@ public class PageCurlView extends View {
 		
 		// Restore canvas
 		//canvas.restore();
+        if(firstDraw) {
+            new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    PageCurlView.this.onFirstDrawFinished();
+                }
+
+                public void sleep(long millis) {
+                    this.removeMessages(0);
+                    sendMessageDelayed(obtainMessage(0), millis);
+                }
+            }.sleep(10);
+        }
 	}
 	
 	/**
