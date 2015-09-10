@@ -119,6 +119,18 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
+        if (id == R.id.action_example) {
+            Intent intent = new Intent(this, ThirdActivity.class);
+            Bitmap v = takeScreenShot(this.findViewById(android.R.id.content).getRootView());
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            v.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            intent.putExtra("img", byteArray);
+            this.startActivity(intent);
+            this.overridePendingTransition(0, 0);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
